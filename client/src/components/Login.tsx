@@ -1,16 +1,40 @@
+import { useState, useEffect } from "react";
+
 const Login = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+
   const handleClick = async () => {
-    const request = await fetch("http://localhost:8080/login");
+    const request = await fetch("http://localhost:8080/login", {
+      credentials: "include",
+    });
     const data = await request.json();
-    console.log(data);
     window.location.href = data.url;
   };
 
+  // const checkLoggedInStatus = async () => {
+  //   const request = await fetch("");
+  //   const data = await request.json();
+  // };
+
+  // useEffect(() => {
+
+  // }, []);
+
   return (
-    <>
-      <h1>POC. Login with Discord below.</h1>
-      <button onClick={handleClick}>Login</button>
-    </>
+    (!loggedIn && (
+      <>
+        <h1>POC. Login with Discord below.</h1>
+        <button onClick={handleClick}>Login</button>
+        <button onClick={() => (location.href = "http://127.0.0.1:5173/home")}>
+          test
+        </button>
+      </>
+    )) || (
+      <>
+        <p>You are logged in!</p>
+      </>
+    )
   );
 };
 

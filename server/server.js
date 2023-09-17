@@ -7,10 +7,13 @@ const Characters = require("./Models/Characters");
 const History = require("./Models/History");
 const fetchPlayerData = require("./fetchPlayerData");
 const axios = require("axios");
+const { sign } = require("jsonwebtoken");
+const authenticate = require("./middleware/authenticate");
 
 const app = express();
 
 const corsOptions = {
+  credentials: true,
   origin: [
     "http://127.0.0.1:5173",
     "https://www.discord.com/api/users/@me, https://discord.com/oauth2/authorize?client_id=1058531248953376838&redirect_uri=http%3A%2F%2F127.0.0.1%3A5173%2Fhome&response_type=code&scope=identify",
@@ -23,10 +26,13 @@ app.use(cors(corsOptions));
 // parse requests of content-type - application/json
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: true }));
+
+app.use(authenticate);
+
 // simple route
 app.get("/", (req, res) => {
   res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
-
   res.json({ message: "Pong." });
 });
 
@@ -34,7 +40,7 @@ app.get("/", (req, res) => {
 app.get("/users", async (req, res) => {
   const users = await Users.findAll();
   res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
-
+  console.log(req.user);
   res.json({ message: users });
 });
 
@@ -46,21 +52,30 @@ app.get("/login", async (req, res) => {
   res.json({ url });
 });
 
+// test register requiring JWT
+app.get("/register", async (req, res) => {
+  const user = req.user;
+  console.log(user);
+  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+  if (user) res.json({ message: `User ${user} is authorized to register` });
+  else res.json({ message: "Unauthorized" });
+});
+
 // Route hit by Discord
 app.get("/discord/auth", async (req, res) => {
   if (!req.query.code) throw new Error("query code not provided");
   const { code } = req.query;
-  const params = new URLSearchParams({
-    client_id: process.env.DISCORD_CLIENT_ID,
-    client_secret: process.env.DISCORD_CLIENT_SECRET,
-    grant_type: "authorization_code",
-    code,
-    redirect_uri: process.env.DISCORD_REDIRECT_URI,
-  });
+  const params = new URLSearchParams();
+  params.append("client_id", process.env.DISCORD_CLIENT_ID);
+  params.append("client_secret", process.env.DISCORD_CLIENT_SECRET);
+  params.append("grant_type", "authorization_code");
+  params.append("code", code);
+  params.append("redirect_uri", process.env.DISCORD_REDIRECT_URI);
+  params.append("scope", "identify");
 
   const headers = {
-    "Content-Type": "application-x-www-form-urlencoded",
-    "Accept-Encoding": "application-x-www-form-urlencoded",
+    "Content-Type": "application/x-www-form-urlencoded",
+    //"Accept-Encoding": "application/json",
   };
 
   const response = await axios.post(
@@ -79,7 +94,22 @@ app.get("/discord/auth", async (req, res) => {
 
   const { id, username, avatar } = userResponse.data;
 
-  res.json({ message: { id, username, avatar } });
+  const token = await sign({ sub: id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
+
+  res.cookie("token", token, { domain: "127.0.0.1", path: "/" }); // trying to use domain and path
+
+  const user = Users.findOne({ where: { userid: id } });
+  if (user) {
+    res.cookie("user", { id, username, avatar, user });
+    res.redirect("http://127.0.0.1:5173");
+  } else {
+    res.cookie("user", { id, username, avatar });
+    res.redirect("http://127.0.0.1:5173/");
+  }
+
+  //res.json({ message: { id, username, avatar } });
 });
 
 app.post("/update-user", async (req, res) => {

@@ -8,7 +8,10 @@ function UserList() {
   console.log(location);
   const [users, setUsers] = useState();
   const [message, setMessage] = useState();
-  const [clientObj, setClientObj] = useState();
+  //const [clientObj, setClientObj] = useState();
+
+  const tokenCookie = document.cookie;
+  console.log("cookie", tokenCookie);
 
   const fetchUsers = async () => {
     try {
@@ -22,20 +25,30 @@ function UserList() {
     }
   };
 
-  const fetchDiscUserObj = async () => {
-    try {
-      const data = await fetch("https://discord.com/api/users/@me", {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      });
-      const json = await data.json();
-      setClientObj(json);
-      console.log(json);
-    } catch (err) {
-      console.error(err);
-    }
+  const testPost = async () => {
+    const req = await fetch("http://localhost:8080/register", {
+      headers: { Authorization: `Bearer ${tokenCookie}` },
+    });
+
+    const data = await req.json();
+    console.log(data);
+    console.log(tokenCookie);
   };
+
+  // const fetchDiscUserObj = async () => {
+  //   try {
+  //     const data = await fetch("https://discord.com/api/users/@me", {
+  //       headers: {
+  //         authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const json = await data.json();
+  //     setClientObj(json);
+  //     console.log(json);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   const updateUser = async (username) => {
     try {
@@ -61,12 +74,13 @@ function UserList() {
 
   useEffect(() => {
     fetchUsers();
-    fetchDiscUserObj();
+    // fetchDiscUserObj();
   }, [message]);
 
   return (
     <>
       {message && <h1>{message}</h1>}
+      <button onClick={testPost}>test register</button>
       {users &&
         users.map((user) => {
           return (
