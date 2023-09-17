@@ -15,6 +15,7 @@ function UserList() {
 
   const fetchUsers = async () => {
     try {
+      // no authorization required to get users
       const data = await fetch("http://localhost:8080/users");
       const json = await data.json();
       const users = json.message;
@@ -26,6 +27,7 @@ function UserList() {
   };
 
   const testPost = async () => {
+    // authorization required register
     const req = await fetch("http://localhost:8080/register", {
       headers: { Authorization: `Bearer ${tokenCookie}` },
     });
@@ -34,21 +36,6 @@ function UserList() {
     console.log(data);
     console.log(tokenCookie);
   };
-
-  // const fetchDiscUserObj = async () => {
-  //   try {
-  //     const data = await fetch("https://discord.com/api/users/@me", {
-  //       headers: {
-  //         authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     const json = await data.json();
-  //     setClientObj(json);
-  //     console.log(json);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
 
   const updateUser = async (username) => {
     try {
