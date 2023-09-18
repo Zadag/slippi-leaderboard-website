@@ -11,7 +11,7 @@ module.exports = function (req, res, next) {
   else {
     try {
       verify(token, process.env.JWT_SECRET, (err, user) => {
-        console.log(err);
+        console.log("error", err);
         req.user = user;
       });
     } catch (e) {
