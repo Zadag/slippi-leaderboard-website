@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
 
   const handleClick = async () => {
@@ -13,6 +15,8 @@ const Login = () => {
     const data = await request.json();
     window.location.href = data.url;
   };
+
+  const handleNavigate = () => navigate("/home");
 
   // const checkLoggedInStatus = async () => {
   //   const request = await fetch("");
@@ -28,14 +32,7 @@ const Login = () => {
       <>
         <h1>POC. Login with Discord below.</h1>
         <button onClick={handleClick}>Login</button>
-        <button
-          onClick={() =>
-            (location.href =
-              "https://slippi-leaderboard-frontend.onrender.com/home")
-          }
-        >
-          test
-        </button>
+        <button onClick={handleNavigate}>test</button>
       </>
     )) || (
       <>
