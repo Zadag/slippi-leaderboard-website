@@ -102,16 +102,25 @@ app.get("/discord/auth", async (req, res) => {
   res.cookie("token", token, {
     //domain: "127.0.0.1:5173",
     //path: "/",
+    sameSite: "lax",
     httpOnly: true,
     //sameSite: false,
   }); // trying to use domain and path
 
   const user = Users.findOne({ where: { userid: id } });
   if (user) {
-    res.cookie("user", { id, username, avatar, user });
+    res.cookie(
+      "user",
+      { id, username, avatar, user },
+      { httpOnly: true, sameSite: "lax" }
+    );
     res.redirect(process.env.DOMAIN_NAME);
   } else {
-    res.cookie("user", { id, username, avatar });
+    res.cookie(
+      "user",
+      { id, username, avatar },
+      { httpOnly: true, sameSite: "lax" }
+    );
     res.redirect(process.env.DOMAIN_NAME);
   }
 
