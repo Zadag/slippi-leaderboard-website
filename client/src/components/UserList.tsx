@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+type user = {
+  id: string;
+  username: string;
+  slippielo: string;
+};
+
 function UserList() {
   const location = useLocation();
   const token = location.search.substring(6);
   console.log(token);
   console.log(location);
-  const [users, setUsers] = useState();
-  const [message, setMessage] = useState();
+  const [users, setUsers] = useState<Array<user>>();
+  const [message, setMessage] = useState<string>();
   //const [clientObj, setClientObj] = useState();
 
   const tokenCookie = document.cookie;
@@ -39,7 +45,7 @@ function UserList() {
     console.log(tokenCookie);
   };
 
-  const updateUser = async (username) => {
+  const updateUser = async (username: string) => {
     try {
       const response = await fetch(`http://localhost:8080/update-user`, {
         method: "POST",
@@ -57,7 +63,7 @@ function UserList() {
     }
   };
 
-  const handleClick = async (username) => {
+  const handleClick = async (username: string) => {
     await updateUser(username);
   };
 
