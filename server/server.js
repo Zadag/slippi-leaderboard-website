@@ -49,8 +49,7 @@ app.get("/users", async (req, res) => {
 // provide oauth redirect
 app.get("/login", async (req, res) => {
   res.header("Access-Control-Allow-Origin", process.env.DOMAIN_NAME);
-  const url =
-    "https://discord.com/api/oauth2/authorize?client_id=1058531248953376838&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fauth&response_type=code&scope=identify";
+  const url = process.env.DISCORD_CALLBACK;
   res.json({ url });
 });
 
