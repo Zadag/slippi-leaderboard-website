@@ -30,7 +30,8 @@ const Login = () => {
         <button onClick={handleClick}>Login</button>
         <button
           onClick={() =>
-            (location.href = "https://slippi-leaderboard.onrender.com/home")
+            (location.href =
+              "https://slippi-leaderboard-frontend.onrender.com/home")
           }
         >
           test
