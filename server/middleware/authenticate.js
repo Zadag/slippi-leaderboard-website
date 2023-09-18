@@ -5,9 +5,8 @@ const { verify } = require("jsonwebtoken");
 
 // Check each reqeust for a valid jwt.  If no token or token is invalid
 module.exports = function (req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  console.log("here", req.headers, authHeader);
+  const token = req.cookies.token;
+  console.log("here", token);
   if (!token) req.user = null;
   else {
     try {

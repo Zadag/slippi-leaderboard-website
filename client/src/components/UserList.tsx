@@ -16,7 +16,9 @@ function UserList() {
   const fetchUsers = async () => {
     try {
       // no authorization required to get users
-      const data = await fetch("http://localhost:8080/users");
+      const data = await fetch("http://localhost:8080/users", {
+        credentials: "include",
+      });
       const json = await data.json();
       const users = json.message;
       setUsers(users);
@@ -29,7 +31,7 @@ function UserList() {
   const testPost = async () => {
     // authorization required register
     const req = await fetch("http://localhost:8080/register", {
-      headers: { Authorization: `Bearer ${tokenCookie}` },
+      credentials: "include",
     });
 
     const data = await req.json();

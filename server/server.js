@@ -9,19 +9,21 @@ const fetchPlayerData = require("./fetchPlayerData");
 const axios = require("axios");
 const { sign } = require("jsonwebtoken");
 const authenticate = require("./middleware/authenticate");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 const corsOptions = {
   credentials: true,
   origin: [
-    "http://127.0.0.1:5173",
+    process.env.DOMAIN_NAME,
     "https://www.discord.com/api/users/@me, https://discord.com/oauth2/authorize?client_id=1058531248953376838&redirect_uri=http%3A%2F%2F127.0.0.1%3A5173%2Fhome&response_type=code&scope=identify",
   ],
   methods: ["GET", "POST"],
 };
 
 app.use(cors(corsOptions));
+app.use(cookieParser());
 
 // parse requests of content-type - application/json
 app.use(express.json());
@@ -32,21 +34,21 @@ app.use(authenticate);
 
 // simple route
 app.get("/", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+  res.header("Access-Control-Allow-Origin", process.env.DOMAIN_NAME);
   res.json({ message: "Pong." });
 });
 
 // get users route
 app.get("/users", async (req, res) => {
   const users = await Users.findAll();
-  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+  res.header("Access-Control-Allow-Origin", process.env.DOMAIN_NAME);
   console.log(req.user);
   res.json({ message: users });
 });
 
 // provide oauth redirect
 app.get("/login", async (req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+  res.header("Access-Control-Allow-Origin", process.env.DOMAIN_NAME);
   const url =
     "https://discord.com/api/oauth2/authorize?client_id=1058531248953376838&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fdiscord%2Fauth&response_type=code&scope=identify";
   res.json({ url });
@@ -56,7 +58,7 @@ app.get("/login", async (req, res) => {
 app.get("/register", async (req, res) => {
   const user = req.user;
   console.log(user);
-  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+  res.header("Access-Control-Allow-Origin", process.env.DOMAIN_NAME);
   if (user) res.json({ message: `User ${user} is authorized to register` });
   else res.json({ message: "Unauthorized" });
 });
@@ -98,15 +100,20 @@ app.get("/discord/auth", async (req, res) => {
     expiresIn: "1d",
   });
 
-  res.cookie("token", token, { domain: "127.0.0.1", path: "/" }); // trying to use domain and path
+  res.cookie("token", token, {
+    //domain: "127.0.0.1:5173",
+    //path: "/",
+    httpOnly: true,
+    //sameSite: false,
+  }); // trying to use domain and path
 
   const user = Users.findOne({ where: { userid: id } });
   if (user) {
     res.cookie("user", { id, username, avatar, user });
-    res.redirect("http://127.0.0.1:5173");
+    res.redirect(process.env.DOMAIN_NAME);
   } else {
     res.cookie("user", { id, username, avatar });
-    res.redirect("http://127.0.0.1:5173/");
+    res.redirect(process.env.DOMAIN_NAME);
   }
 
   //res.json({ message: { id, username, avatar } });
@@ -123,7 +130,7 @@ app.post("/update-user", async (req, res) => {
       const slippiname = user.get("slippiname");
       const data = await fetchPlayerData(slippiname);
       if (data === "invalid connect code") {
-        res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+        res.header("Access-Control-Allow-Origin", process.env.DOMAIN_NAME);
         res.json(`${slippiname} is not a valid slippi name.`);
       }
       const { points, dailyGlobalPlacement, characters } = data;
@@ -136,17 +143,17 @@ app.post("/update-user", async (req, res) => {
         { slippiglobalplacement: dailyGlobalPlacement },
         { where: { username: userId } }
       );
-      res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+      res.header("Access-Control-Allow-Origin", process.env.DOMAIN_NAME);
       res.json({ message: user });
     }
     if (!user) {
-      res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+      res.header("Access-Control-Allow-Origin", process.env.DOMAIN_NAME);
       res.json({ message: "Could not find user" });
     }
   } catch (error) {
     console.error(error);
     if (error) {
-      res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+      res.header("Access-Control-Allow-Origin", process.env.DOMAIN_NAME);
       res.json({ message: "Something went wrong :(" });
     }
   }
