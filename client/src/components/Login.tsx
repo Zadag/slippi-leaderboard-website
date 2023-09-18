@@ -4,9 +4,12 @@ const Login = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
   const handleClick = async () => {
-    const request = await fetch("http://localhost:8080/login", {
-      credentials: "include",
-    });
+    const request = await fetch(
+      "https://slippi-leaderboard.onrender.com/login",
+      {
+        credentials: "include",
+      }
+    );
     const data = await request.json();
     window.location.href = data.url;
   };
@@ -25,7 +28,11 @@ const Login = () => {
       <>
         <h1>POC. Login with Discord below.</h1>
         <button onClick={handleClick}>Login</button>
-        <button onClick={() => (location.href = "http://127.0.0.1:5173/home")}>
+        <button
+          onClick={() =>
+            (location.href = "https://slippi-leaderboard.onrender.com/home")
+          }
+        >
           test
         </button>
       </>

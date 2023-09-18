@@ -22,9 +22,12 @@ function UserList() {
   const fetchUsers = async () => {
     try {
       // no authorization required to get users
-      const data = await fetch("http://localhost:8080/users", {
-        credentials: "include",
-      });
+      const data = await fetch(
+        "https://slippi-leaderboard.onrender.com/users",
+        {
+          credentials: "include",
+        }
+      );
       const json = await data.json();
       const users = json.message;
       setUsers(users);
@@ -36,9 +39,12 @@ function UserList() {
 
   const testPost = async () => {
     // authorization required register
-    const req = await fetch("http://localhost:8080/register", {
-      credentials: "include",
-    });
+    const req = await fetch(
+      "https://slippi-leaderboard.onrender.com/register",
+      {
+        credentials: "include",
+      }
+    );
 
     const data = await req.json();
     console.log(data);
@@ -47,14 +53,17 @@ function UserList() {
 
   const updateUser = async (username: string) => {
     try {
-      const response = await fetch(`http://localhost:8080/update-user`, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: username }),
-      });
+      const response = await fetch(
+        `https://slippi-leaderboard.onrender.com/update-user`,
+        {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: username }),
+        }
+      );
       const data = await response.json();
       const message = `${data.message.username} updated!`;
       setMessage(message);
