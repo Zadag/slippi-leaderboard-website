@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Login = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  setLoggedIn(false);
 
   const handleClick = async () => {
     const request = await fetch("http://localhost:8080/login", {
@@ -16,6 +15,10 @@ const Login = () => {
   //   const request = await fetch("");
   //   const data = await request.json();
   // };
+
+  useEffect(() => {
+    setLoggedIn(false);
+  }, []);
 
   return (
     (!loggedIn && (
