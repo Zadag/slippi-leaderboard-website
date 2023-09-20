@@ -103,7 +103,7 @@ app.get("/discord/auth", async (req, res) => {
     });
 
     res.cookie("token", token, {
-      domain: "slippi-leaderboard-frontend.onrender.comonrender.com",
+      domain: "slippi-leaderboard-frontend.onrender.com",
       //path: "/",
       sameSite: "lax",
       httpOnly: true,
