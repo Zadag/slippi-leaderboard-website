@@ -88,12 +88,20 @@ app.get("/discord/auth", async (req, res) => {
   );
 
   console.log("Response headers are", response.headers);
-
-  const userResponse = await axios.get("https://discord.com/api/users/@me", {
-    headers: {
-      Authorization: `Bearer ${response.data.access_token}`,
-    },
-  });
+  try {
+    const userResponse = await axios.get("https://discord.com/api/users/@me", {
+      headers: {
+        Authorization: `Bearer ${response.data.access_token}`,
+      },
+    });
+  } catch (e) {
+    console.log("response headers are", response.headers);
+  }
+  // const userResponse = await axios.get("https://discord.com/api/users/@me", {
+  //   headers: {
+  //     Authorization: `Bearer ${response.data.access_token}`,
+  //   },
+  // });
 
   const { id, username, avatar } = userResponse.data;
 
