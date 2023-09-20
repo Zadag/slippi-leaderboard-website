@@ -89,23 +89,12 @@ app.get("/discord/auth", async (req, res) => {
     }
   );
 
-  console.log("Response headers are", response.headers);
-  try {
-    const userResponse = await axios.get("https://discord.com/api/users/@me", {
-      headers: {
-        Authorization: `Bearer ${response.data.access_token}`,
-      },
-    });
-    console.log("response headers are inside try", userResponse.headers);
-  } catch (e) {
-    console.log("response headers are", userResponse.headers);
-  }
-  // const userResponse = await axios.get("https://discord.com/api/users/@me", {
-  //   headers: {
-  //     Authorization: `Bearer ${response.data.access_token}`,
-  //   },
-  // });
-
+  const userResponse = await axios.get("https://discord.com/api/users/@me", {
+    headers: {
+      Authorization: `Bearer ${response.data.access_token}`,
+    },
+  });
+  console.log("response headers are", userResponse.headers);
   const { id, username, avatar } = userResponse.data;
 
   const token = await sign({ sub: id }, process.env.JWT_SECRET, {
