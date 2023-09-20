@@ -95,7 +95,7 @@ app.get("/discord/auth", async (req, res) => {
       },
     });
   } catch (e) {
-    console.log("response headers are", response.headers);
+    console.log("response headers are", userResponse.headers);
   }
   // const userResponse = await axios.get("https://discord.com/api/users/@me", {
   //   headers: {
