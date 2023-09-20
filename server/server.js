@@ -19,6 +19,8 @@ const corsOptions = {
     process.env.DOMAIN_NAME,
     "https://www.discord.com/api/users/@me, https://discord.com/oauth2/authorize?client_id=1058531248953376838&redirect_uri=http%3A%2F%2F127.0.0.1%3A5173%2Fhome&response_type=code&scope=identify",
   ],
+  exposedHeaders:
+    "X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-Reset-After, X-RateLimit-Bucket, X-RateLimit-Global, X-RateLimit-Scope",
   methods: ["GET", "POST"],
 };
 
