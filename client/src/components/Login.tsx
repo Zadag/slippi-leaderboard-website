@@ -46,7 +46,7 @@ const Login = () => {
         <h1>POC. Login with Discord below.</h1>
         <button onClick={handleClick}>Login</button>
         <button onClick={handleNavigate}>test</button>
-        <button onClick={testPost}>test</button>
+        <button onClick={testPost}>auth test</button>
       </>
     )) || (
       <>

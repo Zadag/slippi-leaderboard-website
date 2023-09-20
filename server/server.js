@@ -100,7 +100,7 @@ app.get("/discord/auth", async (req, res) => {
   });
 
   res.cookie("token", token, {
-    //domain: "127.0.0.1:5173",
+    domain: "onrender.com",
     //path: "/",
     sameSite: "lax",
     httpOnly: true,
