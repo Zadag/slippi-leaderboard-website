@@ -96,6 +96,7 @@ app.get("/discord/auth", async (req, res) => {
         Authorization: `Bearer ${response.data.access_token}`,
       },
     });
+    console.log("response headers are inside try", userResponse.headers);
   } catch (e) {
     console.log("response headers are", userResponse.headers);
   }
