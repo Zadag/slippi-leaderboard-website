@@ -81,51 +81,55 @@ app.get("/discord/auth", async (req, res) => {
     //"Accept-Encoding": "application/json",
   };
 
-  const response = await axios.post(
-    "https://discord.com/api/oauth2/token",
-    params,
-    {
-      headers,
+  try {
+    const response = await axios.post(
+      "https://discord.com/api/oauth2/token",
+      params,
+      {
+        headers,
+      }
+    );
+
+    const userResponse = await axios.get("https://discord.com/api/users/@me", {
+      headers: {
+        Authorization: `Bearer ${response.data.access_token}`,
+      },
+    });
+    console.log("response headers are", userResponse.headers);
+    const { id, username, avatar } = userResponse.data;
+
+    const token = await sign({ sub: id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.cookie("token", token, {
+      domain: "slippi-leaderboard-frontend.onrender.comonrender.com",
+      //path: "/",
+      sameSite: "lax",
+      httpOnly: true,
+      //sameSite: false,
+    }); // trying to use domain and path
+
+    const user = Users.findOne({ where: { userid: id } });
+    if (user) {
+      res.cookie(
+        "user",
+        { id, username, avatar, user },
+        { httpOnly: true, sameSite: "lax" }
+      );
+      res.redirect(process.env.DOMAIN_NAME);
+    } else {
+      res.cookie(
+        "user",
+        { id, username, avatar },
+        { httpOnly: true, sameSite: "lax" }
+      );
+      res.redirect(process.env.DOMAIN_NAME);
     }
-  );
-
-  const userResponse = await axios.get("https://discord.com/api/users/@me", {
-    headers: {
-      Authorization: `Bearer ${response.data.access_token}`,
-    },
-  });
-  console.log("response headers are", userResponse.headers);
-  const { id, username, avatar } = userResponse.data;
-
-  const token = await sign({ sub: id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
-  });
-
-  res.cookie("token", token, {
-    domain: "onrender.com",
-    //path: "/",
-    sameSite: "lax",
-    httpOnly: true,
-    //sameSite: false,
-  }); // trying to use domain and path
-
-  const user = Users.findOne({ where: { userid: id } });
-  if (user) {
-    res.cookie(
-      "user",
-      { id, username, avatar, user },
-      { httpOnly: true, sameSite: "lax" }
-    );
-    res.redirect(process.env.DOMAIN_NAME);
-  } else {
-    res.cookie(
-      "user",
-      { id, username, avatar },
-      { httpOnly: true, sameSite: "lax" }
-    );
+  } catch (e) {
+    console.log("catch error", e);
     res.redirect(process.env.DOMAIN_NAME);
   }
-
   //res.json({ message: { id, username, avatar } });
 });
 
